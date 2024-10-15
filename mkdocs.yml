@@ -1,0 +1,10 @@
+site_name: pytest-ekstazi
+site_description: Ekstazi Python Implementation
+site_author: Brian Rahadi
+
+theme: readthedocs
+
+repo_url: https://github.com/brianrahadi/pytest-ekstazi
+
+pages:
+- Home: index.md
