@@ -145,7 +145,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "pytest", specifier = ">=6.2.0" },
-    { name = "python-scalpel" },
+    { name = "python-scalpel", specifier = ">=1.0b0" },
 ]
 
 [[package]]
