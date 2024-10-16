@@ -42,3 +42,7 @@ dependencies = [
 Repository = "https://github.com/brianrahadi/pytest-ekstazi"
 [project.entry-points.pytest11]
 ekstazi = "pytest_ekstazi.plugin"
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
