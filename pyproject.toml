@@ -36,6 +36,7 @@ classifiers = [
 ]
 dependencies = [
     "pytest>=6.2.0",
+    "python-scalpel>=1.0b0",
 ]
 [project.urls]
 Repository = "https://github.com/brianrahadi/pytest-ekstazi"
