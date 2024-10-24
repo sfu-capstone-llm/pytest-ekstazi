@@ -1,4 +1,10 @@
+
+from multiple_files.a import func_a
 from pytest import Pytester
+
+def test_foo():
+    func_a()
+    print("WOO")
 
 
 def test_bar_fixture(pytester: Pytester):

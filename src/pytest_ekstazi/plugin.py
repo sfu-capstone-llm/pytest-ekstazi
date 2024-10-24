@@ -31,7 +31,7 @@ class TestDependency:
     hash: str
 
 
-deps: Dict[str, List[TestDependency]] = {"test": [TestDependency("a", "b")]}
+deps: Dict[str, List[TestDependency]] = {}
 
 
 def handler(frame: FrameType, event: str, _):
