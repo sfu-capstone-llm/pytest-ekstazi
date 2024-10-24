@@ -1,4 +1,5 @@
 import pickle
+import sys
 from dataclasses import dataclass
 from hashlib import md5
 from types import FrameType
@@ -48,11 +49,11 @@ def handler(frame: FrameType, event: str, _):
 
 
 def pytest_runtest_setup(item: pytest.Item):
-    print(f"\n[plugin] Setting up before test: {item.name}")
+    sys.settrace(handler)
 
 
 def pytest_runtest_teardown(item: pytest.Item):
-    print(f"\n[plugin] Tearing down after test: {item.name}")
+    sys.settrace(None)
 
 
 def pytest_sessionfinish(session, exitstatus):
