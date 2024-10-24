@@ -1,5 +1,5 @@
-import a
+from multiple_files.a import a
 
 
 def main():
-    a.func_a()
+    a()

@@ -1,5 +1,5 @@
-# import b
+from multiple_files.b import b
 
 
-def func_a():
-    print('a')
+def a():
+    b()

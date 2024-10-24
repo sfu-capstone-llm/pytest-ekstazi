@@ -1,2 +1,2 @@
-# def bb():
-#     print('a')
+def b():
+    print("b")
