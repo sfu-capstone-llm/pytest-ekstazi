@@ -1,6 +1,6 @@
-
 from multiple_files.a import func_a
 from pytest import Pytester
+
 
 def test_foo():
     func_a()
