@@ -58,4 +58,8 @@ def pytest_runtest_teardown(item: pytest.Item):
 
 def pytest_sessionfinish(session, exitstatus):
     with open("deps.pkl", "wb") as file:
-        pickle.dump(deps, file)
+        json_deps = {
+            k: [asdict(dep) for dep in v] for k, v in deps.items()
+        }  # Convert to dict
+        # json.dump(json_deps, json_file, indent=4)
+        pickle.dump(json_deps, file)
