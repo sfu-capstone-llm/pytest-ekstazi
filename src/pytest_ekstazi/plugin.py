@@ -71,8 +71,6 @@ def pytest_runtest_call(item: pytest.Item):
 
 
 def pytest_runtest_teardown(item: pytest.Item):
-    global parent
-    parent = ""
     sys.settrace(None)
 
 
