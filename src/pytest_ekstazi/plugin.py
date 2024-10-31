@@ -53,21 +53,10 @@ def handler(frame: FrameType, event: str, _):
         if filename not in deps:
             deps[filename] = []
 
-        # with open("test.txt", "a") as file:
-        #     file.write(f"src: {filename}\n")
-
-        # assert filename == False
-
         with open(filename, "r") as file:
             hash = md5(file.read().encode())
             hashstr = hash.hexdigest()
             deps[filename].append(TestDependency(filename, hashstr))
-
-        # with open("test.txt", "a") as file:
-        #     file.write(f"src: {filename} hash: {hashstr}\n"
-
-        out_file = open("test.txt", "w")
-        json.dump(deps, out_file)
 
 
 def pytest_runtest_call(item: pytest.Item):
@@ -79,9 +68,6 @@ def pytest_runtest_teardown(item: pytest.Item):
 
 
 def pytest_sessionfinish(session, exitstatus):
-    with open("deps.pkl", "wb") as file:
-        json_deps = {
-            k: [asdict(dep) for dep in v] for k, v in deps.items()
-        }  # Convert to dict
-        # json.dump(json_deps, json_file, indent=4)
-        pickle.dump(json_deps, file)
+    with open("deps.json", "w") as file:
+        json_deps = {k: [asdict(dep) for dep in v] for k, v in deps.items()}
+        json.dump(json_deps, fp=file, indent=4)
