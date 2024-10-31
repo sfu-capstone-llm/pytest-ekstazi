@@ -1,6 +1,7 @@
+import json
 import pickle
 import sys
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from hashlib import md5
 from types import FrameType
 from typing import Dict, List
@@ -39,16 +40,37 @@ def handler(frame: FrameType, event: str, _):
     if event == "call":
         filename = frame.f_code.co_filename
 
-        if filename not in deps[filename]:
+        dirs = filename.split("/")
+        excluded_dir = {".tox", ".venv", ".local"}
+
+        if not dirs[-1].endswith(".py"):
+            return
+
+        for dir in dirs:
+            if dir in excluded_dir:
+                return
+
+        if filename not in deps:
             deps[filename] = []
 
-        with open(filename) as file:
+        # with open("test.txt", "a") as file:
+        #     file.write(f"src: {filename}\n")
+
+        # assert filename == False
+
+        with open(filename, "r") as file:
             hash = md5(file.read().encode())
-            hashstr = hash.digest().decode()
+            hashstr = hash.hexdigest()
             deps[filename].append(TestDependency(filename, hashstr))
 
+        # with open("test.txt", "a") as file:
+        #     file.write(f"src: {filename} hash: {hashstr}\n"
 
-def pytest_runtest_setup(item: pytest.Item):
+        out_file = open("test.txt", "w")
+        json.dump(deps, out_file)
+
+
+def pytest_runtest_call(item: pytest.Item):
     sys.settrace(handler)
 
 
