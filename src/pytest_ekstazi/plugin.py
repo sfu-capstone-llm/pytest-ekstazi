@@ -1,5 +1,4 @@
 import json
-import pickle
 import sys
 from dataclasses import asdict, dataclass
 from hashlib import md5
@@ -34,36 +33,47 @@ class TestDependency:
 
 
 deps: Dict[str, List[TestDependency]] = {}
+parent = ""
 
 
 def handler(frame: FrameType, event: str, _):
-    if event == "call":
-        filename = frame.f_code.co_filename
+    if event != "call":
+        return
 
-        dirs = filename.split("/")
-        excluded_dir = {".tox", ".venv", ".local"}
+    global parent
 
-        if not dirs[-1].endswith(".py"):
+    filename = frame.f_code.co_filename
+    key = parent if parent != "" else filename
+
+    dirs = filename.split("/")
+    excluded_dir = {".tox", ".venv", ".local"}
+
+    if not dirs[-1].endswith(".py"):
+        return
+
+    for dir in dirs:
+        if dir in excluded_dir:
             return
 
-        for dir in dirs:
-            if dir in excluded_dir:
-                return
+    if key not in deps:
+        deps[key] = []
 
-        if filename not in deps:
-            deps[filename] = []
-
-        with open(filename, "r") as file:
-            hash = md5(file.read().encode())
-            hashstr = hash.hexdigest()
-            deps[filename].append(TestDependency(filename, hashstr))
+    with open(filename, "r") as file:
+        hash = md5(file.read().encode())
+        hashstr = hash.hexdigest()
+        deps[key].append(TestDependency(filename, hashstr))
 
 
 def pytest_runtest_call(item: pytest.Item):
+    global parent
+    if not parent:
+        parent = item.fspath.strpath
     sys.settrace(handler)
 
 
 def pytest_runtest_teardown(item: pytest.Item):
+    global parent
+    parent = ""
     sys.settrace(None)
 
 
