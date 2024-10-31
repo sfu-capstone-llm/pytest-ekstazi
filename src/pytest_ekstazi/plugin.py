@@ -43,7 +43,7 @@ def handler(frame: FrameType, event: str, _):
     global parent
 
     filename = frame.f_code.co_filename
-    key = parent if parent != "" else filename
+    key = parent if parent != filename else filename
 
     dirs = filename.split("/")
     excluded_dir = {".tox", ".venv", ".local"}
