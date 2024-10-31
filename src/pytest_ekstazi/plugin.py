@@ -66,8 +66,7 @@ def handler(frame: FrameType, event: str, _):
 
 def pytest_runtest_call(item: pytest.Item):
     global parent
-    if not parent:
-        parent = item.fspath.strpath
+    parent = item.fspath.strpath
     sys.settrace(handler)
 
 

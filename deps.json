@@ -1,0 +1,24 @@
+{
+    "/Users/brianrahadi/para/projects/courses/fall-24/cmpt479/repos/pytest-ekstazi/tests/test_ekstazi.py": [
+        {
+            "src": "/Users/brianrahadi/para/projects/courses/fall-24/cmpt479/repos/pytest-ekstazi/tests/test_ekstazi.py",
+            "hash": "2ca975dc32b342ba15de5434b9a14af0"
+        },
+        {
+            "src": "/Users/brianrahadi/para/projects/courses/fall-24/cmpt479/repos/pytest-ekstazi/tests/multiple_files/main.py",
+            "hash": "0abe09cd2c47a65af2f22c19f723481e"
+        },
+        {
+            "src": "/Users/brianrahadi/para/projects/courses/fall-24/cmpt479/repos/pytest-ekstazi/tests/multiple_files/a.py",
+            "hash": "24f5a7aa0f0dd1b5923c6f60367d463b"
+        },
+        {
+            "src": "/Users/brianrahadi/para/projects/courses/fall-24/cmpt479/repos/pytest-ekstazi/tests/multiple_files/b.py",
+            "hash": "78486b48d8e16b9afcf9331ac7102f18"
+        },
+        {
+            "src": "/Users/brianrahadi/para/projects/courses/fall-24/cmpt479/repos/pytest-ekstazi/src/pytest_ekstazi/plugin.py",
+            "hash": "1cc078d68853ac3d9c4f1cd7c26e3cae"
+        }
+    ]
+}
