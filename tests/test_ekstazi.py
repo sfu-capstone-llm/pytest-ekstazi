@@ -1,10 +1,9 @@
 from multiple_files.main import main
-from pytest import Pytester
+#from pytest import Pytester
 
 
 def test_foo():
     main()
-    print("WOO")
 
 
 # def test_bar_fixture(pytester: Pytester):

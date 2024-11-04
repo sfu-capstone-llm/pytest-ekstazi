@@ -11,14 +11,10 @@ import pytest
 def pytest_addoption(parser):
     group = parser.getgroup("ekstazi")
     group.addoption(
-        "--foo",
-        action="store",
-        dest="dest_foo",
-        default="2024",
-        help='Set the value for the fixture "bar".',
+        "--ekstazi",
+        action="store_true",
+        help='Turn on regression test selection when specified',
     )
-
-    parser.addini("HELLO", "Dummy pytest.ini setting")
 
 
 @pytest.fixture
@@ -66,6 +62,7 @@ def handler(frame: FrameType, event: str, _):
 
 def pytest_runtest_call(item: pytest.Item):
     global parent
+    ekstazi = item.config.getoption("--ekstazi")
     parent = item.fspath.strpath
     sys.settrace(handler)
 
