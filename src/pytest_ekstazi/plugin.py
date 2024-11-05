@@ -32,7 +32,7 @@ deps: Dict[str, List[TestDependency]] = {}
 parent = ""
 
 
-def handler(frame: FrameType, event: str, _):
+def run_all_handler(frame: FrameType, event: str, _):
     if event != "call":
         return
     global parent
@@ -58,12 +58,26 @@ def handler(frame: FrameType, event: str, _):
         hashstr = hash.hexdigest()
         deps[key].append(TestDependency(filename, hashstr))
 
+def rerun_handler(frame: FrameType, event: str, _):
+    if event != "call":
+        return
+    # check all the hashes
+    with open("file.json", "r") as file:
+        json_deps = json.load(file)
+    
+    # if any of the hashes are different, rerun the test
+    # if all the hashes are the same, don't rerun the test
+    # if the file is not in the deps, rerun the test
+    # if the file is in the deps, but the hash is different, rerun the test
+    # if the file is in the deps, and the hash is the same, don't rerun the test
+    # if the file is in the deps, but the file is not found, rerun the test
+    
 
 def pytest_runtest_call(item: pytest.Item):
     global parent
     isRunAll = item.config.getoption("--runAll")
     parent = item.fspath.strpath
-    trace_handler = handler if isRunAll else rerun_handler
+    trace_handler = run_all_handler if isRunAll else rerun_handler
     sys.settrace(trace_handler)
 
 
