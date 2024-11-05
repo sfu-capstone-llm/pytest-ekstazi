@@ -4,16 +4,18 @@ from dataclasses import asdict, dataclass
 from hashlib import md5
 from types import FrameType
 from typing import Dict, List
+import logging
+logger = logging.getLogger(__name__)
 
 import pytest
 
 
 def pytest_addoption(parser):
-    group = parser.getgroup("ekstazi")
+    group = parser.getgroup("runAll")
     group.addoption(
-        "--ekstazi",
+        "--runAll",
         action="store_true",
-        help='Turn on regression test selection when specified',
+        help='Turn on run all test selection when specified. Does not run regression test',
     )
 
 
@@ -62,7 +64,7 @@ def rerun_handler(frame: FrameType, event: str, _):
     if event != "call":
         return
     # check all the hashes
-    with open("file.json", "r") as file:
+    with open("deps.json", "r") as file:
         json_deps = json.load(file)
     
     # if any of the hashes are different, rerun the test
@@ -76,6 +78,7 @@ def rerun_handler(frame: FrameType, event: str, _):
 def pytest_runtest_call(item: pytest.Item):
     global parent
     isRunAll = item.config.getoption("--runAll")
+    logger.info(f"Running with runAll: {isRunAll}")
     parent = item.fspath.strpath
     trace_handler = run_all_handler if isRunAll else rerun_handler
     sys.settrace(trace_handler)
