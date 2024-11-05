@@ -35,7 +35,6 @@ parent = ""
 def handler(frame: FrameType, event: str, _):
     if event != "call":
         return
-
     global parent
 
     filename = frame.f_code.co_filename
@@ -62,9 +61,10 @@ def handler(frame: FrameType, event: str, _):
 
 def pytest_runtest_call(item: pytest.Item):
     global parent
-    ekstazi = item.config.getoption("--ekstazi")
+    isRunAll = item.config.getoption("--runAll")
     parent = item.fspath.strpath
-    sys.settrace(handler)
+    trace_handler = handler if isRunAll else rerun_handler
+    sys.settrace(trace_handler)
 
 
 def pytest_runtest_teardown(item: pytest.Item):
