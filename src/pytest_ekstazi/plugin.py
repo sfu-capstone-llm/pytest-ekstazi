@@ -17,7 +17,12 @@ def pytest_addoption(parser):
         action="store_true",
         help='Turn on run all test selection when specified. Does not run regression test',
     )
-
+    group = parser.getgroup("noUpdate")
+    group.addoption(
+        "--noUpdate",
+        action="store_true",
+        help='Does not update deps.json file',
+    )
 
 @pytest.fixture
 def bar(request):
@@ -67,6 +72,7 @@ def rerun_handler(frame: FrameType, event: str, _):
     with open("deps.json", "r") as file:
         json_deps = json.load(file)
     
+    print(json_deps)
     # if any of the hashes are different, rerun the test
     # if all the hashes are the same, don't rerun the test
     # if the file is not in the deps, rerun the test
@@ -89,6 +95,9 @@ def pytest_runtest_teardown(item: pytest.Item):
 
 
 def pytest_sessionfinish(session, exitstatus):
+    notUpdate = session.config.getoption("--noUpdate")
+    if notUpdate:
+        return
     with open("deps.json", "w") as file:
         json_deps = {k: [asdict(dep) for dep in v] for k, v in deps.items()}
         json.dump(json_deps, fp=file, indent=4)
