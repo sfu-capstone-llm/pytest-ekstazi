@@ -36,7 +36,16 @@ class TestDependency:
     hash: str
     
 deps: Dict[str, List[TestDependency]] = collections.defaultdict(list)
-newDeps: Dict[str, List[TestDependency]] = collections.defaultdict(list)
+try:
+    with open("deps.json", "r") as file:
+        json_deps = json.load(file)
+except FileNotFoundError:
+    print("Error: 'deps.json' file not found.")
+    json_deps = {}
+    for key, value in json_deps.items():
+        for dep in value:
+            deps[key].append(TestDependency(dep.src, dep.hash))
+
 parent = ""
 
 def should_run_file(filename: str) -> bool:
@@ -90,16 +99,16 @@ def pytest_runtest_call(item: pytest.Item):
 
     parent = item.fspath.strpath
 
-    try:
-        with open("deps.json", "r") as file:
-            json_deps = json.load(file)
-    except FileNotFoundError:
-        print("Error: 'deps.json' file not found.")
-        json_deps = {}
-        
-    for key, value in json_deps.items():
-        for dep in value:
-            deps[key].append(TestDependency(dep.src, dep.hash))
+    # try:
+    #     with open("deps.json", "r") as file:
+    #         json_deps = json.load(file)
+    # except FileNotFoundError:
+    #     print("Error: 'deps.json' file not found.")
+    #     json_deps = {}
+    #     
+    # for key, value in json_deps.items():
+    #     for dep in value:
+    #         deps[key].append(TestDependency(dep.src, dep.hash))
 
     if parent in json_deps:
         if not test_deps_changed(deps[parent]):
@@ -117,12 +126,9 @@ def pytest_runtest_teardown(item: pytest.Item):
 
 def pytest_sessionfinish(session, exitstatus):
     isRunAll = session.config.getoption("--runAll")
-    if not isRunAll:
-        print("NEW DEPS", newDeps)
+    if isRunAll:
+       return 
     
-    notUpdate = session.config.getoption("--noUpdate")
-    if notUpdate:
-        return
     with open("deps.json", "w") as file:
         json_deps = {k: [asdict(dep) for dep in v] for k, v in deps.items()}
         json.dump(json_deps, fp=file, indent=4)
