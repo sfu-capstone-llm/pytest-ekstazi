@@ -22,8 +22,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install tox
-        run: pip install tox
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install tox-uv
+        run: uv tool install tox --with tox-uv
 
       - name: Test
         run: tox -e py
