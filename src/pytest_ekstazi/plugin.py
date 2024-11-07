@@ -99,21 +99,13 @@ def pytest_runtest_call(item: pytest.Item):
 
     parent = item.fspath.strpath
 
-    # try:
-    #     with open("deps.json", "r") as file:
-    #         json_deps = json.load(file)
-    # except FileNotFoundError:
-    #     print("Error: 'deps.json' file not found.")
-    #     json_deps = {}
-    #     
-    # for key, value in json_deps.items():
-    #     for dep in value:
-    #         deps[key].append(TestDependency(dep.src, dep.hash))
-
-    if parent in json_deps:
+    print("hello")
+    if parent in deps:
         if not test_deps_changed(deps[parent]):
+            print("skipping")
             pytest.skip()
         else:
+            print("clearing")
             deps[parent].clear()
     
     logger.info(f"Running with isRunAll: {isRunAll}")
