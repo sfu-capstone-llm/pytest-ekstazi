@@ -39,12 +39,11 @@ deps: Dict[str, List[TestDependency]] = collections.defaultdict(list)
 try:
     with open("deps.json", "r") as file:
         json_deps = json.load(file)
+        for key, value in json_deps.items():
+            for dep in value:
+                deps[key].append(TestDependency(dep["src"], dep["hash"]))
 except FileNotFoundError:
     print("Error: 'deps.json' file not found.")
-    json_deps = {}
-    for key, value in json_deps.items():
-        for dep in value:
-            deps[key].append(TestDependency(dep.src, dep.hash))
 
 parent = ""
 
@@ -99,7 +98,8 @@ def pytest_runtest_call(item: pytest.Item):
 
     parent = item.fspath.strpath
 
-    print("hello")
+    print(parent)
+    print(deps)
     if parent in deps:
         if not test_deps_changed(deps[parent]):
             print("skipping")
