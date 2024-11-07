@@ -53,7 +53,7 @@ def should_run_file(filename: str) -> bool:
     return True
 
 
-def run_all_handler(frame: FrameType, event: str, _):
+def trace_handler(frame: FrameType, event: str, _):
     if event != "call":
         return
 
@@ -69,41 +69,30 @@ def run_all_handler(frame: FrameType, event: str, _):
         hashstr = hash.hexdigest()
         deps[key].append(TestDependency(filename, hashstr))
 
-def rerun_handler(frame: FrameType, event: str, _):
-    if event != "call":
-        return
 
-    filename = frame.f_code.co_filename
-    if not should_run_file(filename):
-        return
+def test_deps_changed(deps: List[TestDependency]):
+    for dep in deps:
+        with open(dep.src) as file:
+            new_hash = md5(file.read().encode()).hexdigest()
+            if new_hash != dep.hash:
+                return True
 
-    global parent, json_deps
-    key = parent if parent != filename else filename
-        
-    for key, value in json_deps.items():
-        for src, hash in enumerate(value):
-            deps[key].append(TestDependency(src, hash))
-            
-    with open(filename, "r") as file:
-        hash = md5(file.read().encode())
-        hashstr = hash.hexdigest()
-        for key in json_deps:
-            for dep in json_deps[key]:
-                if dep['src'] == filename and dep['hash'] == hashstr:
-                    return
-        newDeps[key].append(TestDependency(filename, hashstr))
 
 def pytest_runtest_call(item: pytest.Item):
-    global parent, json_deps
+    global parent, deps
     isRunAll = item.config.getoption("--runAll")
-    if not isRunAll:
-        with open("deps.json", "r") as file:
-            json_deps = json.load(file)
-            print("JSON DEPS", json_deps)
+    if isRunAll:
+        return
+
+    parent = item.fspath.strpath
+
+    if parent in json_deps:
+        if not test_deps_changed(deps[parent]):
+            return
+        else:
+            deps[parent] = []
     
     logger.info(f"Running with isRunAll: {isRunAll}")
-    parent = item.fspath.strpath
-    trace_handler = run_all_handler if isRunAll else rerun_handler
     sys.settrace(trace_handler)
 
 
