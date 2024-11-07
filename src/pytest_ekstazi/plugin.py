@@ -66,11 +66,14 @@ def trace_handler(frame: FrameType, event: str, _):
     with open(filename, "r") as file:
         hash = md5(file.read().encode())
         hashstr = hash.hexdigest()
+        # if key in deps and deps[key].src == filename and deps[key].hash == hashstr:
+        #     return
         deps[key].append(TestDependency(filename, hashstr))
 
 
 def test_deps_changed(deps: List[TestDependency]):
     for dep in deps:
+        print("opening dep.src", dep.src)
         with open(dep.src, "r") as file:
             new_hash = md5(file.read().encode()).hexdigest()
             if new_hash != dep.hash:
@@ -87,19 +90,22 @@ def pytest_runtest_call(item: pytest.Item):
 
     parent = item.fspath.strpath
 
-    with open("deps.json", "r") as file:
-        json_deps = json.load(file)
+    try:
+        with open("deps.json", "r") as file:
+            json_deps = json.load(file)
+    except FileNotFoundError:
+        print("Error: 'deps.json' file not found.")
+        json_deps = {}
         
     for key, value in json_deps.items():
-        for src, hash in enumerate(value):
-            deps[key].append(TestDependency(src, hash))
+        for dep in value:
+            deps[key].append(TestDependency(dep.src, dep.hash))
 
-    print("DEPS123", deps)
     if parent in json_deps:
         if not test_deps_changed(deps[parent]):
-            return
+            pytest.skip()
         else:
-            deps[parent] = []
+            deps[parent].clear()
     
     logger.info(f"Running with isRunAll: {isRunAll}")
     sys.settrace(trace_handler)
