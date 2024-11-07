@@ -35,7 +35,6 @@ class TestDependency:
     src: str
     hash: str
     
-json_deps = {}
 deps: Dict[str, List[TestDependency]] = collections.defaultdict(list)
 newDeps: Dict[str, List[TestDependency]] = collections.defaultdict(list)
 parent = ""
@@ -72,10 +71,12 @@ def trace_handler(frame: FrameType, event: str, _):
 
 def test_deps_changed(deps: List[TestDependency]):
     for dep in deps:
-        with open(dep.src) as file:
+        with open(dep.src, "r") as file:
             new_hash = md5(file.read().encode()).hexdigest()
             if new_hash != dep.hash:
                 return True
+    
+    return False
 
 
 def pytest_runtest_call(item: pytest.Item):
@@ -86,6 +87,14 @@ def pytest_runtest_call(item: pytest.Item):
 
     parent = item.fspath.strpath
 
+    with open("deps.json", "r") as file:
+        json_deps = json.load(file)
+        
+    for key, value in json_deps.items():
+        for src, hash in enumerate(value):
+            deps[key].append(TestDependency(src, hash))
+
+    print("DEPS123", deps)
     if parent in json_deps:
         if not test_deps_changed(deps[parent]):
             return
