@@ -98,8 +98,6 @@ def pytest_runtest_call(item: pytest.Item):
 
     parent = item.fspath.strpath
 
-    print(parent)
-    print(deps)
     if parent in deps:
         if not test_deps_changed(deps[parent]):
             print("skipping")
