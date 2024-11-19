@@ -1,5 +1,6 @@
 import json
 import sys
+import pytest
 from dataclasses import asdict, dataclass
 from hashlib import md5
 from types import FrameType
@@ -8,7 +9,6 @@ import collections
 import logging
 logger = logging.getLogger(__name__)
 
-import pytest
 
 
 def pytest_addoption(parser):
