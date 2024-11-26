@@ -20,6 +20,20 @@ Ekstazi Python Implementation
 
 This `pytest`_ plugin was generated with `Cookiecutter`_ along with `@hackebrot`_'s `cookiecutter-pytest-plugin`_ template.
 
+Dev setup
+--------
+
+Install uv
+
+Run:
+uv tool install tox --with tox-uv
+
+To run the tests run:
+tox
+
+To setup the dev environment run:
+uv sync
+source ./.venv/bin/activate
 
 Features
 --------
@@ -36,10 +50,7 @@ Requirements
 Installation
 ------------
 
-You can install "pytest-ekstazi" via `pip`_ from `PyPI`_::
-
-    $ pip install pytest-ekstazi
-
+* TODO
 
 Usage
 -----
