@@ -7,8 +7,8 @@ from types import FrameType
 from typing import Dict, List
 import collections
 import logging
-logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
 
 
 def pytest_addoption(parser):
@@ -16,25 +16,16 @@ def pytest_addoption(parser):
     group.addoption(
         "--runAll",
         action="store_true",
-        help='Turn on run all test selection when specified. Does not run regression test',
+        help="Turn on run all test selection when specified. Does not run regression test selection",
     )
-    group = parser.getgroup("noUpdate")
-    group.addoption(
-        "--noUpdate",
-        action="store_true",
-        help='Does not update deps.json file',
-    )
-
-@pytest.fixture
-def bar(request):
-    return request.config.option.dest_foo
 
 
 @dataclass
 class TestDependency:
     src: str
     hash: str
-    
+
+
 deps: Dict[str, List[TestDependency]] = collections.defaultdict(list)
 try:
     with open("deps.json", "r") as file:
@@ -43,9 +34,10 @@ try:
             for dep in value:
                 deps[key].append(TestDependency(dep["src"], dep["hash"]))
 except FileNotFoundError:
-    print("Error: 'deps.json' file not found.")
+    print("'deps.json' file not found.")
 
 parent = ""
+
 
 def should_run_file(filename: str) -> bool:
     dirs = filename.split("/")
@@ -56,7 +48,7 @@ def should_run_file(filename: str) -> bool:
 
     if any(dir in excluded_dirs for dir in dirs):
         return False
-    
+
     return True
 
 
@@ -86,7 +78,7 @@ def test_deps_changed(deps: List[TestDependency]):
             new_hash = md5(file.read().encode()).hexdigest()
             if new_hash != dep.hash:
                 return True
-    
+
     return False
 
 
@@ -105,7 +97,7 @@ def pytest_runtest_call(item: pytest.Item):
         else:
             print("clearing")
             deps[parent].clear()
-    
+
     logger.info(f"Running with isRunAll: {isRunAll}")
     sys.settrace(trace_handler)
 
@@ -117,8 +109,8 @@ def pytest_runtest_teardown(item: pytest.Item):
 def pytest_sessionfinish(session, exitstatus):
     isRunAll = session.config.getoption("--runAll")
     if isRunAll:
-       return 
-    
+        return
+
     with open("deps.json", "w") as file:
         json_deps = {k: [asdict(dep) for dep in v] for k, v in deps.items()}
         json.dump(json_deps, fp=file, indent=4)

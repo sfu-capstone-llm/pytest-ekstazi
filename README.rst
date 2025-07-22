@@ -26,36 +26,16 @@ Dev setup
 Install uv
 
 Run:
-uv tool install tox --with tox-uv
-
-To run the tests run:
-tox
-
-To setup the dev environment run:
 uv sync
+
+Activate virtual env:
 source ./.venv/bin/activate
 
-Features
---------
+Running this command for the first time should run all the test. The second time running the command should skip running the tests:
+pytest
 
-* TODO
-
-
-Requirements
-------------
-
-* TODO
-
-
-Installation
-------------
-
-* TODO
-
-Usage
------
-
-* TODO
+If you want to run all the tests and collect the new dependancies then delete the deps.json and run:
+pytest
 
 Contributing
 ------------
